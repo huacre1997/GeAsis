@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+ {% block  configuracion %}menu-is-opening menu-open"{% endblock %} 
+ {% block establecimientos %}active{% endblock %}
+{% comment %} {% block navusuario %}nav-item active{% endblock  %}
+{% block collapseUsuarios %}collapse show{% endblock  %}
+{% block usuario_list %}collapse-item active{% endblock  %} {% endcomment %}
+{% load static %}
+{% block content %}
+
+
+  <div class="card shadow">
+    <!-- Card Header - Dropdown -->
+    <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold ">Listado de Establecimientos</h6>
+      <a class="btn btn-primary " href="{% url 'Web:create_user' %}"><i class="fa fa-plus-circle "></i>&nbsp;Nuevo usuario</a>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body ">
+<div class="table-responsive">
+
+            <table class="table  table-hover  dt-responsive" id="TablaEESS" style="width: 100%;">
+        <thead>
+          <tr>
+                      <th>Código</th>
+
+            <th>Establecimiento</th>
+            <th>Distrito</th>
+            <th >Provincia</th>
+            <th >Departamento</th>
+            <th>Responsble</th>
+            <th>Opciones</th>
+          </tr>
+        </thead>
+
+
+
+      </table>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+{% block js_page %}
+
+<script>
+ var TablaUsuarios
+  $(document).ready(function () {
+
+    TablaUsuarios = $("#TablaEESS").DataTable({
+      responsive: true,
+      processing:true,
+      ordering:false,
+      ajax: {
+        url: "{% url 'Web:establecimientos' %}",
+        type: "POST",
+        data: {
+          "action": "searchData"
+        },
+        dataSrc: ""
+      },
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+    
+      language:{
+                    "url": "{% static 'language.json' %}",
+
+          },
+      columns: [
+      {
+          "data": 'codigo',
+          className: "middle"
+        },
+        {
+          "data": 'descripcion',
+          className: "middle"
+        },
+
+        {
+          "data": "distrito",
+          className: "middle"
+        },
+     
+     
+        {
+          "data": 'provincia',
+          className: "text-center middle",
+
+        },
+     
+     {
+          "data": 'departamento',
+          className: "text-center middle",
+
+        },
+     
+     {
+          "data": 'responsable',
+          className: "text-center middle",
+
+        },
+     
+   {
+          "data": null,
+          className: "text-center middle",
+
+        },
+      ],
+      columnDefs: [{
+          targets: [-1],
+
+       render: function (row, data, index) {
+              var buttons =
+                '<a class="btn btn-warning btn-edit-usuario mr-1"  role="button" href="../users/edit/' +
+                index.id +
+                '"><i class="far fa-edit" ></i></a>' ;
+
+              return buttons;
+             
+       }
+        },
+
+
+
+      ],
+      "createdRow": function (row, data, index) {
+        // if (!data["estado"]) {
+        //   $('.btn-success', row).eq(0).removeClass().addClass("btn btn-danger btn-circle")
+        //   $(".fa-thumbs-up", row).eq(0).removeClass().addClass("fas fa-thumbs-down")
+
+        // }
+      },
+        
+
+    })
+
+
+  });
+</script>
+{% endblock js_page %}

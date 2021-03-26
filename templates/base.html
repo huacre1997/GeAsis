@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% load static %}
+  {% load base_extras %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GeAsis</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'fontawesome-free/css/all.min.css' %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- Tempusdominus Bootstrap 4 -->
+  {% comment %}
+  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  {% endcomment %}
+  <!-- iCheck -->
+  <link rel="stylesheet" href="{% static 'css/icheck-bootstrap.min.css' %}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'css/adminlte.min.css' %}">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="{% static 'css/OverlayScrollbars.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/jquery.confirm.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/datatable.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/datatable.bootstrap5.min.css' %}">
+
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+</head>
+
+<style>
+  .nav-sub{
+    margin-left: 20px;
+  }
+  .nav-item .active{
+    width: 214px !important;
+  }
+</style>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+  <div class="wrapper">
+
+    <!-- Preloader -->
+    <div class="preloader flex-column justify-content-center align-items-center">
+      <img class="animation__shake" src="{% static 'img/AdminLTELogo.png' %}" alt="AdminLTELogo" height="60" width="60">
+    </div>
+
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <!-- Left navbar links -->
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <!-- <li class="nav-item d-none d-sm-inline-block">
+          <a href="{% url 'Web:home' %}" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="#" class="nav-link">Contact</a>
+        </li> -->
+      </ul>
+
+      <!-- Right navbar links -->
+      <ul class="navbar-nav ml-auto">
+        <!-- Navbar Search -->
+        {% comment %} <li class="nav-item">
+          <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+            <i class="fas fa-search"></i>
+          </a>
+          <div class="navbar-search-block">
+            <form class="form-inline">
+              <div class="input-group input-group-sm">
+                <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                <div class="input-group-append">
+                  <button class="btn btn-navbar" type="submit">
+                    <i class="fas fa-search"></i>
+                  </button>
+                  <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </li> {% endcomment %}
+
+        <!-- Messages Dropdown Menu -->
+        <li class="nav-item dropdown no-arrow">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{request.user.persona.nombres}} {{request.user.persona.apellidos}}</span>
+            <img class="img-profile rounded-circle" style="width: 2.1em;" src="{% static 'img/user1-128x128.jpg' %}">
+          </a>
+          <!-- Dropdown - User Information -->
+          <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+            <a class="dropdown-item" href="#">
+              <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+              Profile
+            </a>
+            <a class="dropdown-item" href="#">
+              <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+              Settings
+            </a>
+            <a class="dropdown-item" href="#">
+              <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+              Activity Log
+            </a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" id="logout">
+              <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+              Logout
+            </a>
+          </div>
+        </li>
+      </ul>
+    </nav>
+    <!-- /.navbar -->
+
+    <!-- Main Sidebar Container -->
+    {% with admin=request.user|has_group:"Administrador" user=request.user|has_group:"Usuario" soporte=request.user|has_group:"Soporte Administrativo" %}
+
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <!-- Brand Logo -->
+      <a href="{% url 'Web:home' %}" class="brand-link">
+        <img src="{% static 'img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+          style="opacity: .8">
+        <span class="brand-text font-weight-light">GeAsis </span>
+      </a>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div class="image">
+            <img src="{% static 'img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
+          </div>
+          <div class="info">
+            <a href="#" class="d-block">{{request.user.username}} </a>
+            <span data-toggle="tooltip" title="3 New Messages" class="badge bg-primary">{{request.user.groups.all.0}}</span>
+          </div>
+        </div>
+
+        <!-- SidebarSearch Form -->
+        {% comment %} <div class="form-inline">
+          <div class="input-group" data-widget="sidebar-search">
+            <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+            <div class="input-group-append">
+              <button class="btn btn-sidebar">
+                <i class="fas fa-search fa-fw"></i>
+              </button>
+            </div>
+          </div>
+        </div> {% endcomment %}
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+            {% comment %} <li class="nav-item menu-open">
+              <a href="#" class="nav-link active">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>
+                  Dashboard
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="./index.html" class="nav-link active">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Dashboard v1</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="./index2.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Dashboard v2</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="./index3.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Dashboard v3</p>
+                  </a>
+                </li>
+              </ul>
+            </li> {% endcomment %}
+            {% if admin or user   %}
+
+            <li class="nav-item 
+            {% block ingreso %}
+              
+            {% endblock ingreso %}
+              ">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-copy"></i>
+                <p>
+                  Ingreso de datos
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item nav-sub">
+                  <a href="{% url 'Web:programaciones' %}" class="nav-link {% block programacion %}{% endblock programacion %}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Programación</p>
+                  </a>
+                </li>
+                <li class="nav-item nav-sub">
+                  <a href="{% url 'Web:liquidaciones' %}" class="nav-link {% block liquidacion %}{% endblock liquidacion %}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Liquidación</p>
+                  </a>
+                </li>
+
+              </ul>
+            </li>
+            {%endif%}
+            {% if admin or soporte  %}
+
+            <li class="nav-item {% block configuracion %}{% endblock configuracion %}">
+              <a href="#" class="nav-link">
+                <i class="fas fa-cog nav-icon"></i>                <p>
+                  Configuración
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                {% if  admin  %}
+
+                <li class="nav-item nav-sub">
+                  <a href="{% url 'Web:usuarios' %}" class="nav-link {% block usuarios %}{% endblock usuarios %}">
+                    <i class="fa fa-users nav-icon"></i>
+                    <p>Usuarios</p>
+                  </a>
+                </li>
+                {%endif%}
+                {% if  soporte or admin  %}
+
+                <li class="nav-item nav-sub">
+                  <a href="{% url 'Web:establecimientos' %}" class="nav-link {% block establecimientos %}{% endblock establecimientos %}">
+                    <i class="fas fa-hospital nav-icon"></i>
+                    <p>Establecimientos de Salud</p>
+                  </a>
+                </li>
+                {% endif %}
+
+              </ul>
+            </li>
+            {% endif %}
+
+            {% if admin or soporte %}
+
+            <li class="nav-item has-treeview {% block mantenimiento %}{% endblock mantenimiento %}">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-tools"></i>
+                <p>
+                  Mantenimiento
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+
+                <li class="nav-item has-treeview nav-sub {% block rrhh %}{% endblock rrhh %}">
+                  <a href="#" class="nav-link" style="width: 214px !important;">
+                    <i class="fas fa-users-cog nav-icon"></i>                    <p>
+                      Recursos Humanos
+                      <i class="right fas fa-angle-left"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item nav-sub">
+                      <a href="{% url 'Web:inforhus' %}" class="nav-link {% block base %}{% endblock base %}" style="width: 214px !important;">
+                        <i class="fas fa-file-import nav-icon"></i>                        
+                        <p>Importación de la Base INFORHUS</p>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-sub">
+                      <a href="#" class="nav-link" style="width: 214px !important;">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p style=" text-align: justify;
+                        margin: 0 auto;
+                        max-width: 180px; word-break: break-word;">Actualización de Destacados,Residentes,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Designados y Reasignados</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item nav-sub">
+                  <a href="{% url 'Web:mantenimiento-variables' %}" class="nav-link {% block variables %}{% endblock variables %}">
+                    <i class="fas fa-circle nav-icon"></i>
+                    <p>Variables de Programación y Liquidación</p>
+                  </a>
+                </li>
+                <li class="nav-item nav-sub">
+                  <a href="{% url 'Web:mantenimiento-EESS' %}" class="nav-link">
+                    <i class="fas fa-hospital nav-icon"></i>
+                    <p>Establecimientos de Salud</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            {%endif%}
+            <li class="nav-item has-treeview ">
+              <a href="#" class="nav-link">
+                <i class="fas fa-sync nav-icon"></i>                <p>
+                  Flujo de Información
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+
+                <li class="nav-item has-treeview nav-sub">
+                  <a href="#" class="nav-link " style="width: 214px !important;">
+                    <i class="fas fa-share-square nav-icon"></i>                    <p>
+                      Envio de Datos
+                      <i class="right fas fa-angle-left"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    {% if user  %}
+
+                    <li class="nav-item nav-sub">
+                      <a href="#" class="nav-link ">
+                        <i class="far fa-dot-circle nav-icon"></i>
+                        <p>Programación y Liquidación</p>
+                      </a>
+                    </li>
+                    {% endif %}
+                    {% if admin or soporte %}
+
+                    <li class="nav-item nav-sub">
+                      <a href="#" class="nav-link">
+                        <i class="far fa-dot-circle nav-icon"></i>
+                        <p>Actualización de Data</p>
+                      </a>
+                    </li>
+                    {% endif %}
+                  </ul>
+                </li>
+                <li class="nav-item nav-sub">
+                  <a href="#" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Recepción de Datos</p>
+                  </a>
+                </li>
+
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="far fa-clipboard nav-icon"></i>                <p>
+                  Informes
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item nav-sub">
+                  <a href="pages/layout/top-nav.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Programación</p>
+                  </a>
+                </li>
+                <li class="nav-item nav-sub">
+                  <a href="pages/layout/top-nav.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Liquidación</p>
+                  </a>
+                </li>
+                <li class="nav-item nav-sub">
+                  <a href="pages/layout/top-nav.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p style="word-break: break-word">Destacados,Residentes,&nbsp;&nbsp;&nbsp;Designados y Reasignados</p>
+                  </a>
+                </li>
+                <li class="nav-item nav-sub">
+                  <a href="pages/layout/top-nav.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Personal según Cargos y Profesiones</p>
+                  </a>
+                </li>
+                <li class="nav-item nav-sub">
+                  <a href="pages/layout/top-nav.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Reportes de Descuentos</p>
+                  </a>
+                </li>
+                <li class="nav-item nav-sub">
+                  <a href="pages/layout/top-nav.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Reportes de Consultas Web</p>
+                  </a>
+                </li>
+                
+
+              </ul>
+            </li>
+            {% comment %} <li class="nav-header">Configuración</li> {% endcomment %}
+            {% comment %} <li class="nav-item">
+              <a href="pages/calendar.html" class="nav-link">
+                <i class="nav-icon fa fa-users"></i>
+                <p>
+                  Usuarios
+                </p>
+              </a>
+            </li>
+
+
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-book"></i>
+                <p>
+                  Pages
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="pages/examples/invoice.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Invoice</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="pages/examples/profile.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Profile</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="pages/examples/e-commerce.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>E-commerce</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="pages/examples/projects.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Projects</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="pages/examples/project-add.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Project Add</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="pages/examples/project-edit.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Project Edit</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="pages/examples/project-detail.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Project Detail</p>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="pages/examples/faq.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>FAQ</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="pages/examples/contact-us.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Contact us</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            {% endcomment %}
+
+
+          </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+      </div>
+      <!-- /.sidebar -->
+    </aside>
+    {% endwith %}
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+          {% block content %}
+        
+          <div class="row mb-2">
+            <div class="col-sm-6">
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="{% url 'Web:home' %}">Home</a></li>
+                {% comment %} <li class="breadcrumb-item active">Dashboard v1</li> {% endcomment %}
+              </ol>
+            </div><!-- /.col -->
+              <br>
+             <form action="{% url 'Web:inportEESS' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h2>Importar Establecimientos</h2>
+          <input type="file" name="SSEE" id="">
+          <button type="submit" class="btn btn-primary">Importar Datos</button>
+          </form>
+          <br>
+          <form action="{% url 'Web:inportEESS' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h2>Importar Personal</h2>
+          <input type="file" name="SSEE" id="">
+          <button type="submit" class="btn btn-primary">Importar Datos</button>
+          </form>
+          </div><!-- /.row -->
+          {% endblock content %}
+
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="container-fluid">
+
+        </div><!-- /.container-fluid -->
+      </section>
+      <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    <footer class="main-footer">
+      <strong>Copyright &copy; 2021 <a href="">GeAsis </a></strong>
+      All rights reserved.
+      <div class="float-right d-none d-sm-inline-block">
+        <b>Version</b> 1.0
+      </div>
+    </footer>
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+      <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+  </div>
+  <!-- ./wrapper -->
+
+  <!-- jQuery -->
+  {% comment %} <script src="{% static 'js/jquery.min.js' %}"></script> {% endcomment %}}
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script src="{% static 'js/select2.min.js' %}"></script>
+  <script src="{% static 'js/moment.min.js' %}"></script>
+
+  <!-- jQuery UI 1.11.4 -->
+  <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+  <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+  <script>
+    $.widget.bridge('uibutton', $.ui.button)
+  </script>
+  <!-- Bootstrap 4 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous">
+  </script>
+
+
+
+  <script src="{% static 'js/moment.min.js' %}"></script>
+  <script src="{% static 'js/datatable.min.js' %}"></script>
+  <script src="{% static 'js/datatable.bootstrap5.min.js' %}"></script>
+
+  <script src="{% static 'js/jquery.confirm.min.js' %}"></script>
+
+
+  <!-- overlayScrollbars -->
+  <script src="{% static 'js/jquery.overlayScrollbars.min.js' %}"></script>
+  <!-- AdminLTE App -->
+  <script src="{% static 'js/adminlte.min.js' %}"></script>
+  {% block js_page %}{% endblock %}
+  <script>
+    {% if not request.user.change %}
+
+      de = $.confirm({
+        title: "Cambiar Contraseña",
+        content: "URL: {% url 'Web:UsuarioChangePassword' request.user.id %}",
+        columnClass: 'col-xl-4 col-lg-4 col-md-8 col-sm-10',
+        icon: "fas fa-sync-alt",
+        type: "blue",
+        theme:"material",
+        scrollToPreviousElement: true,
+        scrollToPreviousElementAnimate: true,
+        buttons: {
+          Confirm: {
+            text: 'Guardar cambios',
+            btnClass: 'btn btn-primary',
+
+            action: function url(e) {
+
+              this.$content[0].ownerDocument.getElementById("btnEditUser").click()
+              return false;
+            }
+          },
+
+        },
+
+
+
+      });
+
+
+    {% endif %}
+        document.getElementById("logout").addEventListener("click", function () {
+            Swal.fire({
+                title: 'Cerrar Sesión',
+                text: "Estas seguro que deseas cerrar sesión?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                cancelButtonText: 'Cancelar',
+
+                confirmButtonText: 'Sí, cerrar sesión!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                  window.location.href="{% url 'Web:logout'%}"
+                }
+            })
+
+        })
+
+       const notificacion=(time,title,type,message)=>   {
+    Swal.fire({
+        title: title,
+        timer: time,
+        timerProgressBar: true,
+        icon: type,
+        showConfirmButton: false,
+        text: message,
+        
+    })
+  }
+    {% if messages %}
+    var html_message=""
+    var tipo=[]
+
+      {% for mensaje in messages %}
+      
+        html_message+='{{mensaje|striptags}}'
+            tipo+="{{mensaje.tags}}"
+           
+        {%endfor%}
+        if(tipo=="login success"){
+          const Toast = Swal.mixin({
+  toast: true,
+  position: 'top',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
+
+Toast.fire({
+  icon: 'success',
+  title: html_message
+})
+        }else if(tipo=="success"){
+          notificacion(2000,"Genial!","success",html_message)
+
+        }
+        else{
+        notificacion(2000,"Ha ocurrido un error!","error",html_message)
+        }
+    
+      
+     
+    {%endif%}
+
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+  </script>
+</body>
+
+</html>

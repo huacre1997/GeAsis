@@ -1,0 +1,17 @@
+TIPO_DOC_SIN_DOC = ''
+TIPO_DOC_DNI = 1
+TIPO_DOC_CARNET_EXTRANJERIA = 2
+
+CHOICES_TIPO_DOC2 = (
+	("1", 'DNI'),
+	("2", 'Carnet Extranjería'),
+
+
+)
+
+TIPO_SEXO_HOMBRE = "1"
+TIPO_SEXO_MUJER = "2"
+CHOICES_SEXO = (
+	(TIPO_SEXO_HOMBRE, 'Hombre'),
+	(TIPO_SEXO_MUJER, 'Mujer')
+)

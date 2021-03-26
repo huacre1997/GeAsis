@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+ {% block  configuracion %}menu-is-opening menu-open"{% endblock %} 
+ {% block usuarios %}active{% endblock %}
+{% comment %} {% block navusuario %}nav-item active{% endblock  %}
+{% block collapseUsuarios %}collapse show{% endblock  %}
+{% block usuario_list %}collapse-item active{% endblock  %} {% endcomment %}
+{% load static %}
+{% block content %}
+
+
+  <div class="card shadow">
+    <!-- Card Header - Dropdown -->
+    <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold ">Listado de Usuarios</h6>
+      <a class="btn btn-primary " href="{% url 'Web:create_user' %}"><i class="fa fa-plus-circle "></i>&nbsp;Nuevo usuario</a>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body ">
+<div class="table-responsive">
+
+            <table class="table  table-hover  dt-responsive" id="TablaUsuarios" style="width: 100%;">
+        <thead>
+          <tr>
+            <th  style="width: 5%;"class="all">Id</th>
+            <th style="width: 15%;">Nombres</th>
+            <th style="width: 10%;">Usuario</th>
+            <th style="width: 15%;">Fecha Creación</th>
+            <th style="width: 10%;">Rol</th>
+            <th style="width: 10%;">Estado</th>
+            <th style="width: 30%;">Opciones</th>
+          </tr>
+        </thead>
+
+
+
+      </table>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+{% block js_page %}
+
+<script>
+ var TablaUsuarios
+  $(document).ready(function () {
+
+    TablaUsuarios = $("#TablaUsuarios").DataTable({
+      responsive: true,
+      processing:true,
+      ordering:false,
+      ajax: {
+        url: "{% url 'Web:usuarios' %}",
+        type: "POST",
+        data: {
+          "action": "searchData"
+        },
+        dataSrc: ""
+      },
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+    
+      language:{
+                    "url": "{% static 'language.json' %}",
+
+          },
+      columns: [
+        {
+          "data": 'id',
+          className: "middle"
+        },
+
+        {
+          "data": null,
+          className: "middle"
+        },
+     
+     
+        {
+          "data": 'username',
+          className: "text-center middle",
+
+        },
+           {
+          "data": 'date_joined',
+          className: "text-center middle",
+
+        },
+          {
+          "data": 'date_joined',
+          className: "text-center middle",
+
+        },
+        {
+          "data": 'is_active',
+          className: "estado middle",
+          render: function (data, type, row) {
+            console.log(data);
+            if (data) {
+              return '<span class="badge badge-success">Habilitado</span> ';
+            } else {
+              return '<span class="badge badge-danger">Deshabilitado</span> '
+            }
+          }
+        },
+
+        {
+          "data": 'estado',
+          className: "text-center middle"
+        },
+
+
+      ],
+      columnDefs: [{
+          targets: [-1],
+
+       render: function (row, data, index) {
+            if (index.is_active) {
+              var buttons =
+                '<a class="btn btn-warning btn-edit-usuario mr-1"  role="button" href="../users/edit/' +
+                index.id +
+                '"><i class="far fa-edit" ></i></a>' +
+
+                '<button class="btn btn-primary  btn-change-password mr-1 "  role="button" data-id=' + index
+                .id +
+                '><i class="fas fa-sync-alt"></i></button>' +
+                '<button class="btn btn-danger btn-desactivate-usuario "  target="reportes"><i class="fas fa-ban"></i></button>';
+
+              return buttons;
+            } else {
+              var buttons =
+                '<a class="btn btn-warning btn-edit-usuario mr-1"  role="button" href="../users/edit/' +
+                index.id +
+                '"><i class="far fa-edit" ></i></a>' +
+
+                '<button class="btn btn-primary  btn-change-password mr-1 "  role="button" data-id=' + index
+                .id +
+                '><i class="fas fa-sync-alt"></i></button>' +
+                '<button class="btn btn-success btn-activate-usuario "  target="reportes"><i class="fas fa-play"></i></i></button>';
+
+              return buttons;
+
+            }
+       }
+        },
+        {
+          targets: [-3],
+          class: 'text-center',
+          orderable: false,
+          render: function (data, type, row) {
+            var html = '';
+            $.each(row.groups, function (key, value) {
+              html += '<span class="badge badge-success">' + value.name + '</span> ';
+            });
+            return html;
+          }
+        },
+        {
+          targets: [1],
+          class: 'text-center',
+          render: function (data, type, row) {
+            return data.persona
+          }
+        },
+
+
+      ],
+      "createdRow": function (row, data, index) {
+        // if (!data["estado"]) {
+        //   $('.btn-success', row).eq(0).removeClass().addClass("btn btn-danger btn-circle")
+        //   $(".fa-thumbs-up", row).eq(0).removeClass().addClass("fas fa-thumbs-down")
+
+        // }
+      },
+        
+
+    })
+    $(document).on("click", '.btn-password', function (e) {
+
+      e.preventDefault()
+      var tr = TablaUsuarios.cell($(this).closest("td")).index();
+      var data = TablaUsuarios.row(tr.row).data();
+      de = $.confirm({
+        title: "Reestablecer Contraseña",
+        content: "URL:../Usuario/reset/" + data.id,
+        columnClass: 'col-xl-4 col-lg-4 col-md-8 col-sm-10',
+        icon: "fas fa-sync-alt",
+        type: "blue",
+        scrollToPreviousElement: true,
+        scrollToPreviousElementAnimate: true,
+        buttons: {
+          Confirm: {
+            text: 'Guardar cambios',
+            btnClass: 'btn btn-primary',
+
+            action: function url(e) {
+
+              this.$content[0].ownerDocument.getElementById("btnEditUser").click()
+              return false;
+            }
+          },
+
+          cancel: function () {
+
+          },
+        },
+
+
+
+      });
+
+
+    });
+    $(document).on("click", '.btn-change-password', function (e) {
+      e.preventDefault()
+      var tr = TablaUsuarios.cell($(this).closest("td")).index();
+      var data = TablaUsuarios.row(tr.row).data();
+      Swal.fire({
+        title: 'Reestablecer Contraseña',
+        icon: "warning",
+        text: "¿Está seguro que desea reestablecer la contraseña?",
+        showCancelButton: true,
+        confirmButtonColor: "#1cc88a",
+        cancelButtonColor: ' #6c757d',
+        confirmButtonText: 'Sí, reestablecer!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.showLoading()
+
+            fetch("../Usuario/reset/" + data.id + "/", {
+              method: "POST",
+              headers: {
+                'X-CSRFToken': csrftoken
+              },
+            }).then(data => data.json()).then(response => {
+              console.log(response);
+              if (response.status = 200) {
+                                TablaUsuarios.ajax.reload()
+
+                notificacion(1500, "Genial!", "success", "Contraseña reestablecida")
+              } else
+              if (response == 404) {
+                notificacion(1500, "Error", "error", "Ese usuario no existe")
+              }
+            })
+          
+        }
+      })
+    })
+    
+    $(document).on("click", '.btn-activate-usuario', function (e) {
+
+      e.preventDefault()
+      var tr = TablaUsuarios.cell($(this).closest("td")).index();
+      var data = TablaUsuarios.row(tr.row).data();
+      Swal.fire({
+        title: 'Habilitar usuario',
+        icon: "warning",
+        text: "¿Está seguro que desea habilitar al usuario?",
+        showCancelButton: true,
+        confirmButtonColor: "#1cc88a",
+        cancelButtonColor: ' #6c757d',
+        confirmButtonText: 'Sí, activarlo!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.showLoading()
+
+            fetch("../Usuario/activate/" + data.id + "/", {
+              method: "POST",
+              headers: {
+                'X-CSRFToken': csrftoken
+              },
+            }).then(data => data.json()).then(response => {
+              console.log(response);
+              if (response.status = 200) {
+                TablaUsuarios.ajax.reload()
+
+                notificacion(1500, "Genial!", "success", "Usuario habilitado")
+              } else
+              if (response == 404) {
+                notificacion(1500, "Error", "error", "Ese usuario no existe")
+              }
+            })
+          
+        }
+      })
+    })
+
+      
+    $(document).on("click", '.btn-desactivate-usuario', function (e) {
+
+      e.preventDefault()
+      var tr = TablaUsuarios.cell($(this).closest("td")).index();
+      var data = TablaUsuarios.row(tr.row).data();
+      Swal.fire({
+        title: 'Inhabilitar usuario',
+        icon: "warning",
+        text: "¿Está seguro que desea desahibilitar al usuario?",
+        showCancelButton: true,
+        confirmButtonColor: "#e74a3b",
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, desactivarlo!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.showLoading()
+
+            fetch("../Usuario/desactivate/" + data.id + "/", {
+              method: "POST",
+              headers: {
+                'X-CSRFToken': csrftoken
+              },
+            }).then(data => data.json()).then(response => {
+              if (response.status = 200) {
+                notificacion(1500, "Genial!", "success", "Usuario inhabilitado")
+                TablaUsuarios.ajax.reload()
+              } else
+              if (response == 404) {
+                notificacion(1500, "Error", "error", "Ese usuario no existe")
+              }
+            })
+          
+        }
+      })
+    })
+  });
+</script>
+{% endblock js_page %}

@@ -1,0 +1,193 @@
+ {% extends 'base.html' %}
+ {% block  configuracion %}menu-is-opening menu-open"{% endblock %} 
+ {% block usuarios %}active{% endblock %}
+
+    {% block content %}
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/widgets.css">
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css">
+
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/responsive.css">
+
+    <div class="container-fluid">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <div class="row align-items-center">
+            <div class="col-lg-3">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Editar Usuarios</h6>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="card-body">
+        
+          <form method="post" id="formUsuario" action="{% url 'Web:edit_user' usuario.pk %}" class="needs-validation" novalidate
+            enctype="multipart/form-data">
+            <div class="module aligned">
+              {% csrf_token %}
+               <div class="row mb-4">
+                 <div class="col-lg-6">
+                <div class="form-outline">
+                                  <label class="form-label" for="id_username">Usuario</label>
+
+                  <input type="text" name="username" value="{% if usuario %}{{usuario.username}}{% endif %}" id="id_username" class="form-control" >
+                    <div class="invalid-feedback" id="invalid_username">Este campo es requerido.</div>
+
+                </div>
+              </div>
+  
+            </div>
+        
+        
+              {% if error %}
+              <div class="alert alert-danger text-center" role="alert">
+                {% for field, error in error.items %}
+                {{ error | striptags }}
+                <br>
+                {% endfor %}
+              </div>
+              {% endif %}
+
+              <div class="form-row field-permissions">
+
+
+                <div>
+
+
+                  <label for="id_permissions">Permisos:</label>
+
+                  <div class="related-widget-wrapper">
+
+
+
+                    {{form.groups}}
+
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <a class="btn btn-ligth" href="{% url 'Web:usuarios' %}">Volver</a>
+              <button type="button" id="btn-add-usuario" 
+                class="btn btn-primary">Guardar usuario</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+
+      <script type="text/javascript" src="/admin/jsi18n/"></script>
+      <script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
+      <script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+      <script type="text/javascript" src="/static/admin/js/core.js"></script>
+      <script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js"></script>
+      <script type="text/javascript" src="/static/admin/js/SelectBox.js"></script>
+      <script type="text/javascript" src="/static/admin/js/actions.js"></script>
+      <script type="text/javascript" src="/static/admin/js/SelectFilter2.js"></script>
+      <script type="text/javascript" src="/static/admin/js/urlify.js"></script>
+      <script type="text/javascript" src="/static/admin/js/prepopulate.js"></script>
+      <script type="text/javascript" src="/static/admin/js/vendor/xregexp/xregexp.js"></script>
+    </div>
+
+
+    {% endblock content %}
+
+    {% block js_page %}
+    <script>
+      $(document).ready(function () {
+              const removeElements = (elms) => elms.forEach(el => el.remove());
+
+               let username = document.getElementById("id_username")
+
+
+        username.addEventListener("keyup", function () {
+          username.classList.remove("is-invalid")
+        })
+   
+        document.getElementById("btn-add-usuario").addEventListener("click", function (e) {
+                removeElements(document.querySelectorAll(".invalid-feedback"));
+          console.log(document.querySelectorAll(".invalid_group"))
+          e.preventDefault()
+          let error=0
+          if (  document.getElementById("invalid_group")!=null) {
+            document.getElementById("invalid_group").innerHTML=""
+
+          }
+          let form = document.querySelector("#formUsuario")
+          let url = document.getElementById("formUsuario").getAttribute("action")
+
+          let formData = new FormData(form)
+          var sel = document.querySelector("#id_groups_to");
+          sel.classList.remove("is-invalid","form-select")
+          if(sel.options.length>1){
+              let div=document.createElement("div")
+                div.classList.add("invalid-feedback")
+                div.setAttribute("id","invalid_group")
+                div.innerHTML="Escoga solo un Perfil"
+                sel.after(div)
+                sel.classList.add("is-invalid","form-select")
+              error=1
+          }   
+
+          for (var i = 0, n = sel.options.length; i < n; i++) { // looping over the options
+            if (sel.options[i].value){
+              formData.append("groups", (sel.options[i].value))
+            }else{
+              
+            }
+
+          }
+          if(error==0){
+            
+          fetch(url, {
+            method: "POST",
+
+            body: formData
+          }).then(data => data.json()).then(response => {
+              console.log(response)
+            if (response.status == 500) {
+              notificacion(1500,"Error","error","Revise los campos")
+
+           
+              if (response.form.username) {
+                document.getElementById("invalid_username").innerHTML = response.form.username[0]
+                username.classList.add("is-invalid")
+
+              }
+  
+            
+              if (response.form.groups) {
+                let div=document.createElement("div")
+                div.classList.add("invalid-feedback")
+                div.setAttribute("id","invalid_group")
+                div.innerHTML= response.form.groups[0]
+                sel.after(div)
+                sel.classList.add("is-invalid","form-select")
+
+              }
+            } else {
+              Swal.fire({
+                title: 'Éxito!',
+                text: "Usuario editado!",
+                icon: 'success',
+                confirmButtonColor: '#3085d6',
+                allowOutsideClick:false,
+
+                confirmButtonText: 'Ok!'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  window.location.href = response.url
+                }
+              })
+            }
+          })
+          }
+        })
+      })
+    </script>
+
+    {% endblock js_page %}
